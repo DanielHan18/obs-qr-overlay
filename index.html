@@ -2,11 +2,11 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Overlay QR Stream</title>
-    <!-- Tải Font Montserrat (Regular) từ Google Fonts -->
+    <title>Overlay QR Stream - Cartoon Bounce 6 Min Loop</title>
+    <!-- Nhập Font Montserrat từ Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
         * {
@@ -21,136 +21,180 @@
             overflow: hidden;
             background-color: transparent; /* Nền trong suốt hoàn toàn */
             font-family: 'Montserrat', sans-serif;
-            font-weight: 400; /* Montserrat Regular */
+            color: #ffffff;
         }
 
-        /* Khung định vị chính giữa màn hình */
+        /* Định vị ở góc dưới bên trái màn hình (16:9), cách rìa màn hình đúng 40px */
         .qr-overlay-container {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            bottom: 40px; /* Margin 40px tính từ lề dưới */
+            left: 40px;   /* Margin 40px tính từ lề trái */
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
+            transform-origin: bottom left; /* Tâm thu phóng ở góc dưới bên trái */
         }
 
-        /* Class kích hoạt Animation (Tổng thời gian 3 phút = 180s) */
-        .animate-qr {
-            animation: qrLifecycle 180s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        /* Khung wrapper chịu trách nhiệm nhún nhảy hoạt hình liên tục (Cartoon Idle Loop) */
+        .qr-card-wrapper {
+            display: inline-block;
         }
 
-        @keyframes qrLifecycle {
-            /* 0% - 1%: Xuất hiện nhẹ nhàng ở chính giữa */
-            0% {
-                opacity: 0;
-                visibility: visible;
-                transform: translate(-50%, -45%) scale(0.95);
-            }
-            1% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
-            }
-            
-            /* 1% - 98%: Giữ nguyên ở trung tâm trong khoảng ~3 phút */
-            98% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
-            }
-
-            /* 98% - 100%: Trượt qua phải và mờ dần */
-            100% {
-                opacity: 0;
-                transform: translate(120%, -50%) scale(0.95);
-                visibility: hidden;
-            }
-        }
-
-        /* Thiết kế Thẻ QR Trắng Mờ + Blur Background */
+        /* Thẻ QR với nền mờ + Blur Background */
         .qr-card {
-            background: rgba(255, 255, 255, 0.25); /* Trắng mờ */
-            backdrop-filter: blur(16px); /* Blur background đằng sau */
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.4); /* Viền sáng nhẹ */
-            border-radius: 24px;
-            padding: 28px 36px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            color: #1e293b; /* Màu chữ tối tương phản trên nền trắng mờ */
-            width: 340px;
         }
 
-        /* Dòng chữ Phía trên */
+        /* Dòng chữ phía trên */
         .qr-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #0f172a;
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
             margin-bottom: 16px;
-            line-height: 1.3;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+            letter-spacing: 0.5px;
         }
 
-        /* Khung chứa ảnh QR */
+        /* Khung chứa ảnh QR 300x300 px */
         .qr-image-wrapper {
             background: #ffffff;
-            padding: 10px;
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 12px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
         .qr-image-wrapper img {
-            width: 230px;
-            height: 230px;
+            width: 300px;  /* Kích thước chuẩn 300px */
+            height: 300px; /* Kích thước chuẩn 300px */
             display: block;
-            border-radius: 6px;
+            border-radius: 10px;
         }
 
-        /* Dòng chữ Phía dưới */
+        /* Dòng chữ phía dưới */
         .qr-footer {
             margin-top: 16px;
-            font-size: 14px;
-            color: #334155;
-            font-weight: 400;
+            font-size: 15px;
+            font-weight: 500;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+            max-width: 320px;
+            line-height: 1.3;
+        }
+
+        /* ANIMATION 1: Chu kỳ 6 phút (360 giây) bao gồm Pop-in, Giữ hiện, Pop-out và Ẩn */
+        .animate-lifecycle {
+            animation: qrLifecycle 360s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* ANIMATION 2: Lắc lư nhún nhảy liên tục kiểu nhân vật hoạt hình */
+        .animate-idle-bounce {
+            animation: cartoonBounceLoop 2.2s ease-in-out infinite;
+        }
+
+        /* ĐIỀU KHIỂN CHU KỲ 360 GIÂY */
+        @keyframes qrLifecycle {
+            /* --- 1. POP-IN HOẠT HÌNH (0s -> 1.8s) --- */
+            0% {
+                opacity: 0;
+                visibility: visible;
+                transform: scale(0.1) translate(-100px, 100px) rotate(-15deg);
+            }
+            0.3% {
+                opacity: 1;
+                transform: scale(1.15) translate(12px, -12px) rotate(4deg); /* Nhảy nảy quá đà */
+            }
+            0.5% {
+                opacity: 1;
+                transform: scale(1) translate(0, 0) rotate(0deg); /* Dừng lại vị trí chuẩn */
+            }
+
+            /* --- 2. HIỂN THỊ TRONG 3 PHÚT (0.5% -> 49.2%) --- */
+            49.2% { /* Mốc ~177 giây */
+                opacity: 1;
+                transform: scale(1) translate(0, 0) rotate(0deg);
+            }
+
+            /* --- 3. POP-OUT HOẠT HÌNH NGƯỢC LẠI (49.2% -> 50%) --- */
+            49.5% {
+                opacity: 1;
+                transform: scale(1.12) translate(10px, -10px) rotate(3deg); /* Nảy nhẹ một nhịp trước khi rút */
+            }
+            50% { /* Mốc đúng 3 phút (180s) */
+                opacity: 0;
+                transform: scale(0.1) translate(-100px, 100px) rotate(-15deg); /* Thu nhỏ lặn xuống góc trái */
+                visibility: hidden;
+            }
+
+            /* --- 4. TRẠNG THÁI ẨN TRONG 3 PHÚT CÒN LẠI (50% -> 100%) --- */
+            100% {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        /* Hiệu ứng nhún nhảy lắc lư như nhân vật hoạt hình (Loop liên tục trong lúc hiện) */
+        @keyframes cartoonBounceLoop {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg) scale(1, 1);
+            }
+            25% {
+                transform: translateY(-8px) rotate(-2deg) scale(0.98, 1.02);
+            }
+            50% {
+                transform: translateY(0) rotate(0deg) scale(1, 1);
+            }
+            75% {
+                transform: translateY(-4px) rotate(2deg) scale(1.01, 0.99);
+            }
         }
     </style>
 </head>
 <body>
 
     <div class="qr-overlay-container" id="qrContainer">
-        <div class="qr-card">
-            <div class="qr-title"> Ủng hộ Daniel Han </div>
-            <div class="qr-image-wrapper">
-                <img src="https://vietqr.app/img?acc=1471720595&bank=BIDV&fullacc=true&template=qronly&showinfo=false" alt="VietQR">
+        <!-- Khung wrapper chịu trách nhiệm nhún nhảy Loop hoạt hình -->
+        <div class="qr-card-wrapper animate-idle-bounce">
+            <div class="qr-card">
+                <div class="qr-title">Ủng hộ Streamer</div>
+                <div class="qr-image-wrapper">
+                    <img src="https://vietqr.app/img?acc=1471720595&bank=BIDV&fullacc=true&template=qronly&showinfo=false" alt="VietQR Donate">
+                </div>
+                <div class="qr-footer">Cảm ơn sự ủng hộ của mọi người</div>
             </div>
-            <div class="qr-footer"> Cảm ơn sự ủng hộ của mọi người </div>
         </div>
     </div>
 
     <script>
         const qrContainer = document.getElementById('qrContainer');
 
-        // Chu kỳ: 5 phút = 300,000 ms (Gồm 3 phút hiển thị + 2 phút ẩn)
-        const CYCLE_TIME = 5 * 60 * 1000; 
+        // Tổng thời gian 1 chu kỳ: 6 phút = 360,000 ms (3 phút hiện + 3 phút ẩn)
+        const CYCLE_TIME = 6 * 60 * 1000; 
 
-        function showQR() {
-            // Reset Animation
-            qrContainer.classList.remove('animate-qr');
-            void qrContainer.offsetWidth; // Trigger reflow
-            qrContainer.classList.add('animate-qr');
+        function triggerPopUp() {
+            // Reset Animation để bắt đầu lại chu kỳ mới
+            qrContainer.classList.remove('animate-lifecycle');
+            void qrContainer.offsetWidth; // Force reflow
+            qrContainer.classList.add('animate-lifecycle');
         }
 
-        // Chạy lần đầu tiên sau 2 giây khi bật Stream/OBS
-        setTimeout(() => {
-            showQR();
-            
-            // Lặp lại cứ mỗi 5 phút một lần
-            setInterval(showQR, CYCLE_TIME);
-        }, 2000);
+        // Khởi chạy ngay lập tức khi mở OBS
+        triggerPopUp();
+
+        // Tự động lặp lại liên tục sau mỗi 6 phút
+        setInterval(triggerPopUp, CYCLE_TIME);
     </script>
 </body>
 </html>
