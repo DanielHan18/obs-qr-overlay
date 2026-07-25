@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Overlay QR Stream</title>
+    <!-- Tải Font Montserrat (Regular) từ Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+            background-color: transparent; /* Nền trong suốt hoàn toàn */
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400; /* Montserrat Regular */
+        }
+
+        /* Khung định vị chính giữa màn hình */
+        .qr-overlay-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* Class kích hoạt Animation (Tổng thời gian 3 phút = 180s) */
+        .animate-qr {
+            animation: qrLifecycle 180s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes qrLifecycle {
+            /* 0% - 1%: Xuất hiện nhẹ nhàng ở chính giữa */
+            0% {
+                opacity: 0;
+                visibility: visible;
+                transform: translate(-50%, -45%) scale(0.95);
+            }
+            1% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            
+            /* 1% - 98%: Giữ nguyên ở trung tâm trong khoảng ~3 phút */
+            98% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            /* 98% - 100%: Trượt qua phải và mờ dần */
+            100% {
+                opacity: 0;
+                transform: translate(120%, -50%) scale(0.95);
+                visibility: hidden;
+            }
+        }
+
+        /* Thiết kế Thẻ QR Trắng Mờ + Blur Background */
+        .qr-card {
+            background: rgba(255, 255, 255, 0.25); /* Trắng mờ */
+            backdrop-filter: blur(16px); /* Blur background đằng sau */
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4); /* Viền sáng nhẹ */
+            border-radius: 24px;
+            padding: 28px 36px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            color: #1e293b; /* Màu chữ tối tương phản trên nền trắng mờ */
+            width: 340px;
+        }
+
+        /* Dòng chữ Phía trên */
+        .qr-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+
+        /* Khung chứa ảnh QR */
+        .qr-image-wrapper {
+            background: #ffffff;
+            padding: 10px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .qr-image-wrapper img {
+            width: 230px;
+            height: 230px;
+            display: block;
+            border-radius: 6px;
+        }
+
+        /* Dòng chữ Phía dưới */
+        .qr-footer {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #334155;
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="qr-overlay-container" id="qrContainer">
+        <div class="qr-card">
+            <div class="qr-title"> Ủng hộ Daniel Han </div>
+            <div class="qr-image-wrapper">
+                <img src="https://vietqr.app/img?acc=1471720595&bank=BIDV&fullacc=true&template=qronly&showinfo=false" alt="VietQR">
+            </div>
+            <div class="qr-footer"> Cảm ơn sự ủng hộ của mọi người </div>
+        </div>
+    </div>
+
+    <script>
+        const qrContainer = document.getElementById('qrContainer');
+
+        // Chu kỳ: 5 phút = 300,000 ms (Gồm 3 phút hiển thị + 2 phút ẩn)
+        const CYCLE_TIME = 5 * 60 * 1000; 
+
+        function showQR() {
+            // Reset Animation
+            qrContainer.classList.remove('animate-qr');
+            void qrContainer.offsetWidth; // Trigger reflow
+            qrContainer.classList.add('animate-qr');
+        }
+
+        // Chạy lần đầu tiên sau 2 giây khi bật Stream/OBS
+        setTimeout(() => {
+            showQR();
+            
+            // Lặp lại cứ mỗi 5 phút một lần
+            setInterval(showQR, CYCLE_TIME);
+        }, 2000);
+    </script>
+</body>
+</html>
